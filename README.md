@@ -24,7 +24,7 @@ Everything regenerates **daily** from the latest evaluation runs, so the governa
 *Refreshed automatically every day.*
 
 <!-- READINESS:START -->
-*Updated 2026-10-07 08:22 UTC*
+*Updated 2026-10-07 08:23 UTC*
 
 | AI system | Recommendation | 🟢 Mitigated | 🔴 Open | 🟠 Evidence gap | 🔵 Accepted | Governance pack |
 |---|---|---|---|---|---|---|
