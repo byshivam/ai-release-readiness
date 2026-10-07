@@ -1,0 +1,62 @@
+# System card inputs for the Arya Bank policy assistant.
+# Everything here is written by people; everything in reports/ is generated from it plus evidence.
+
+id: banking-rag-eval
+name: Arya Bank Policy Assistant
+version: "prompt v2"
+owner: Shivam Tayal (AI Quality Engineering)
+repository: https://github.com/byshivam/banking-rag-eval
+evidence_source: eval-reports branch of the repository above (one JSON report per evaluation run)
+
+description: >
+  A retrieval-augmented (RAG) assistant that answers customer questions about Arya Bank's
+  savings, credit card, home loan, KYC and dispute policies, citing the policy document it used.
+  Arya Bank is fictional; its five policy documents are the only knowledge source.
+
+intended_use:
+  - Answer factual questions about published Arya Bank policies, with a citation to the source document
+  - Apply a published rule to a customer's stated situation (for example, which late-fee slab applies)
+  - Tell the customer when a question is not covered by the policy documents
+
+out_of_scope:
+  - Investment, tax or legal advice, or recommending one product over another
+  - Accessing or changing any customer account (the assistant has no tools)
+  - Questions about products not covered by the five policy documents
+  - Use without the citation shown to the customer
+
+users: Retail banking customers, through a self-service chat channel
+human_oversight: >
+  Answers are informational. Fee disputes, fraud reports and account changes are handed to
+  human agents through existing channels named in the policies.
+
+approved_configuration:
+  generator_model: openai/gpt-oss-20b
+  prompt_version: v2
+
+components:
+  - name: Generator LLM
+    detail: openai/gpt-oss-20b served by Groq (third-party API)
+  - name: Judge LLM (evaluation only)
+    detail: openai/gpt-oss-120b served by Groq
+  - name: Embeddings
+    detail: sentence-transformers/all-MiniLM-L6-v2, run locally
+  - name: Vector store
+    detail: ChromaDB, local
+  - name: Knowledge base
+    detail: 5 fictional policy documents (SAV-001, CC-002, HL-003, KYC-004, DIS-005)
+
+evaluation:
+  dataset: 24-case golden set — factual, reasoning, out-of-scope and safety questions
+  method: Deterministic checks plus LLM-as-a-judge (DeepEval faithfulness and answer relevancy)
+  cadence: Every push, every pull request and nightly
+
+known_limitations:
+  - The golden set is small (24 cases) and hand-written; it does not cover every phrasing customers use
+  - The LLM judge is itself a model and can be wrong; its scores are supporting evidence, not ground truth
+  - Free-tier API limits can stop a run part-way; incomplete runs are treated as missing evidence
+  - English only; Hindi and Hinglish questions are untested
+
+sign_off:
+  approver: ""        # name of the person accepting the release recommendation
+  date: ""
+  decision: ""        # GO / CONDITIONAL GO / NO-GO as accepted by the approver

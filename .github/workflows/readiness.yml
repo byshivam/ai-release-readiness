@@ -1,0 +1,45 @@
+name: Release readiness
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "47 3 * * *"   # daily, after banking-rag-eval's nightly evaluation (09:17 IST)
+  workflow_dispatch:
+
+jobs:
+  readiness:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Unit tests
+        run: pytest -q
+
+      - name: Fetch latest evaluation evidence
+        run: git clone -q --depth 1 --branch eval-reports https://github.com/byshivam/banking-rag-eval evidence/banking-rag-eval
+
+      - name: Assess release readiness
+        run: PYTHONPATH=src python -m readiness.cli --system banking-rag-eval --evidence evidence/banking-rag-eval
+
+      - name: Publish to the job summary
+        if: always()
+        run: test -f reports/RELEASE_DECISION.md && cat reports/RELEASE_DECISION.md >> "$GITHUB_STEP_SUMMARY" || true
+
+      - name: Commit refreshed reports
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        run: |
+          git add reports docs README.md
+          if git diff --cached --quiet; then echo "No changes"; exit 0; fi
+          git config user.name "Shivam Tayal"
+          git config user.email "71970833+tayalshivam@users.noreply.github.com"
+          git commit -qm "Refresh release readiness [skip ci]"
+          git pull -q --rebase origin main
+          git push -q origin HEAD:main

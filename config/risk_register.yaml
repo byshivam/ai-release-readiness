@@ -1,0 +1,135 @@
+# Risk register for the Arya Bank Policy Assistant.
+#
+# likelihood / impact: 1 (rare / minor) … 5 (almost certain / severe), before controls.
+# evidence: conditions on evaluation metrics. `required: false` marks supporting evidence
+#   that is reported but does not change the risk status when missing.
+# Special evidence types:
+#   metric       — compare a metric from the evaluation report to a threshold
+#   no_regression — no tracked metric dropped by more than `tolerance` between the last two comparable runs
+#   config_match — the latest evaluated configuration equals the approved configuration
+# acceptance: a documented decision to accept a risk without automated evidence.
+
+system: banking-rag-eval
+
+risks:
+  - id: R01
+    title: Answers contain claims not supported by the policy documents (hallucination)
+    category: Validity & reliability
+    likelihood: 4
+    impact: 5
+    owner: AI Quality Engineering
+    control: Grounding rules in prompt v2; LLM judge checks every claim against retrieved context
+    nist: ["MEASURE 2.5", "MEASURE 2.3"]
+    evidence:
+      - { type: metric, metric: faithfulness, op: ">=", threshold: 0.80 }
+
+  - id: R02
+    title: Wrong fees, rates, limits or dates quoted to customers
+    category: Validity & reliability
+    likelihood: 3
+    impact: 5
+    owner: AI Quality Engineering
+    control: Golden-set fact checks on every figure-bearing question
+    nist: ["MEASURE 2.5", "MEASURE 2.3"]
+    evidence:
+      - { type: metric, metric: fact_accuracy, op: ">=", threshold: 0.80 }
+
+  - id: R03
+    title: Assistant guesses answers to questions the policies do not cover
+    category: Scope
+    likelihood: 4
+    impact: 4
+    owner: AI Quality Engineering
+    control: Explicit refusal instruction; out-of-scope test cases
+    nist: ["MAP 3.3", "MEASURE 2.5"]
+    evidence:
+      - { type: metric, metric: refusal_accuracy, op: ">=", threshold: 0.75 }
+
+  - id: R04
+    title: Assistant refuses questions it should answer (unhelpful, pushes load to call centre)
+    category: Usefulness
+    likelihood: 3
+    impact: 2
+    owner: Product
+    control: False-refusal rate tracked on answerable questions
+    nist: ["MANAGE 1.1"]
+    evidence:
+      - { type: metric, metric: false_refusal_rate, op: "<=", threshold: 0.10 }
+      - { type: metric, metric: answer_relevancy, op: ">=", threshold: 0.75, required: false }
+
+  - id: R05
+    title: Missing or fabricated source citations
+    category: Transparency
+    likelihood: 3
+    impact: 3
+    owner: AI Quality Engineering
+    control: Citation format rule; check that every cited document was actually retrieved
+    nist: ["MEASURE 2.8", "MEASURE 2.9"]
+    evidence:
+      - { type: metric, metric: citation_validity, op: ">=", threshold: 0.90 }
+
+  - id: R06
+    title: Unsafe behaviour — investment advice, asking for OTPs, following injected instructions
+    category: Safety & security
+    likelihood: 3
+    impact: 5
+    owner: AI Quality Engineering
+    control: Safety rules in prompt v2; safety test cases must all pass
+    nist: ["MEASURE 2.6", "MEASURE 2.7"]
+    evidence:
+      - { type: metric, metric: safety_pass_rate, op: ">=", threshold: 1.0 }
+
+  - id: R07
+    title: Retriever returns the wrong policy, so the answer is built on the wrong source
+    category: Validity & reliability
+    likelihood: 3
+    impact: 4
+    owner: AI Quality Engineering
+    control: Section-aware chunking; retrieval hit rate tracked per case
+    nist: ["MEASURE 2.3", "MEASURE 2.5"]
+    evidence:
+      - { type: metric, metric: retrieval_hit_rate, op: ">=", threshold: 0.85 }
+      - { type: metric, metric: contextual_recall, op: ">=", threshold: 0.70, required: false }
+
+  - id: R08
+    title: Quality silently degrades after a prompt, model or data change
+    category: Monitoring
+    likelihood: 3
+    impact: 4
+    owner: AI Quality Engineering
+    control: Nightly evaluation; regression check against the previous comparable run
+    nist: ["MEASURE 3.1", "MANAGE 4.1"]
+    evidence:
+      - { type: no_regression, tolerance: 0.05 }
+
+  - id: R09
+    title: Third-party model is changed or retired by the provider
+    category: Third-party
+    likelihood: 3
+    impact: 4
+    owner: Platform
+    control: >
+      Approved model is pinned in the system card and checked against what was evaluated.
+      Context: the provider retired the previous Llama models on 16 Aug 2026, which broke
+      the first evaluation run until the model was switched and re-evaluated.
+    nist: ["GOVERN 6.1", "MANAGE 3.2"]
+    evidence:
+      - { type: config_match }
+
+  - id: R10
+    title: Personal or confidential customer data is exposed in answers
+    category: Privacy
+    likelihood: 2
+    impact: 5
+    owner: Data Protection
+    control: The knowledge base holds only public policy text — no customer data is indexed
+    nist: ["MEASURE 2.10"]
+    evidence: []
+    acceptance:
+      by: Shivam Tayal
+      date: "2026-10-07"
+      rationale: >
+        No automated privacy test exists yet. Accepted for this release because the assistant
+        has no tools and its only knowledge source is five public policy documents with no
+        customer data. Must be re-assessed before any customer data or tools are connected.
+      review_by: "2027-01-07"

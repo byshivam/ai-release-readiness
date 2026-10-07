@@ -1,0 +1,26 @@
+# Organisational risk tolerance and release rules (NIST AI RMF MAP 1.5, GOVERN 1.3).
+
+scoring:
+  # inherent score = likelihood (1-5) x impact (1-5)
+  ratings:            # lowest score for each rating
+    critical: 15
+    high: 10
+    medium: 5
+    low: 1
+
+evidence:
+  max_age_days: 7                 # older evidence is stale and does not count
+  require_matching_configuration: true   # evidence must come from the approved model + prompt
+
+decision_rules:
+  # Evaluated in order; the first rule that matches decides.
+  - decision: NO-GO
+    when: an open risk is rated high or critical
+  - decision: NO-GO
+    when: a critical risk has no current evidence and has not been formally accepted
+  - decision: CONDITIONAL GO
+    when: any risk is open, has an evidence gap, or relies on a formal acceptance
+  - decision: GO
+    when: every risk is mitigated by current evidence
+
+human_sign_off_required: true     # the tool recommends; a named person decides
