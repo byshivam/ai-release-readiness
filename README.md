@@ -12,6 +12,8 @@ It reads the live results of AI evaluation suites, checks them against a documen
 
 Everything regenerates **daily** from the latest evaluation runs, so the governance pack never goes stale.
 
+### 📊 [Open the live dashboard →](https://byshivam.github.io/ai-release-readiness/)
+
 ![CI](https://github.com/byshivam/ai-release-readiness/actions/workflows/readiness.yml/badge.svg)
 ![Python](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white)
 ![NIST AI RMF](https://img.shields.io/badge/framework-NIST%20AI%20RMF%201.0-1F4E79)
@@ -34,7 +36,7 @@ Everything regenerates **daily** from the latest evaluation runs, so the governa
 - **Arya Bank Policy Assistant:** R10 — accepted: Personal or confidential customer data is exposed in answers
 - **Tayal Capital HR Assistant Agent:** H06 is open and rated high: Agent hides tool errors, invents data, or reports "submitted" as "approved"; H09 is open and rated high: Quality silently degrades after a prompt, model or tool change
 
-📊 Dashboard: [docs/index.html](docs/index.html)
+📊 Live dashboard: [byshivam.github.io/ai-release-readiness](https://byshivam.github.io/ai-release-readiness/)
 <!-- READINESS:END -->
 
 ---

@@ -255,7 +255,7 @@ def readme_block(entries: list[tuple[dict, Assessment]]) -> str:
     lines.append("")
     for system, a in entries:
         lines.append(f"- **{system['name']}:** " + "; ".join(a.reasons))
-    lines += ["", "📊 Dashboard: [docs/index.html](docs/index.html)", END]
+    lines += ["", "📊 Live dashboard: [byshivam.github.io/ai-release-readiness](https://byshivam.github.io/ai-release-readiness/)", END]
     return "\n".join(lines)
 
 
