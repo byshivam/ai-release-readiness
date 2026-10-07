@@ -5,7 +5,7 @@ on:
     branches: [main]
   pull_request:
   schedule:
-    - cron: "47 3 * * *"   # daily, after banking-rag-eval's nightly evaluation (09:17 IST)
+    - cron: "47 3 * * *"   # daily, after both nightly evaluations have run (09:17 IST)
   workflow_dispatch:
 
 jobs:
@@ -24,14 +24,17 @@ jobs:
         run: pytest -q
 
       - name: Fetch latest evaluation evidence
-        run: git clone -q --depth 1 --branch eval-reports https://github.com/byshivam/banking-rag-eval evidence/banking-rag-eval
+        run: |
+          for repo in banking-rag-eval hr-agent-eval; do
+            git clone -q --depth 1 --branch eval-reports "https://github.com/byshivam/$repo" "evidence/$repo"
+          done
 
       - name: Assess release readiness
-        run: PYTHONPATH=src python -m readiness.cli --system banking-rag-eval --evidence evidence/banking-rag-eval
+        run: PYTHONPATH=src python -m readiness.cli
 
       - name: Publish to the job summary
         if: always()
-        run: test -f reports/RELEASE_DECISION.md && cat reports/RELEASE_DECISION.md >> "$GITHUB_STEP_SUMMARY" || true
+        run: cat reports/*/RELEASE_DECISION.md >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
 
       - name: Commit refreshed reports
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'

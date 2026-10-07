@@ -1,27 +1,38 @@
 """Load evaluation runs and pick the evidence that is allowed to count.
 
-A run report is the JSON written by an evaluation suite (for example
-banking-rag-eval's `evals/run_eval.py`). One run may be incomplete — the LLM judge
-can stop part-way when a free-tier quota runs out — so evidence is collected per
-metric: each metric's value comes from the newest run that
+A run report is the JSON written by an evaluation suite (banking-rag-eval and
+hr-agent-eval use the same shape). Free-tier API limits can stop a run part-way,
+in two different ways, and they are treated differently:
 
-  * actually measured it,
-  * used the approved model and prompt (when the policy requires it), and
-  * is not older than the policy's maximum evidence age.
+* **The run stopped before every test case ran** ("stopped after 11 of 25").
+  Every metric in that run describes only part of the test set, so the whole run
+  is excluded from evidence. It still counts as "the latest run" for checking
+  which model was evaluated.
+* **Only the LLM judge stopped** ("LLM judge stopped at …"). Deterministic metrics
+  cover every case and still count; the system's judge metrics from that run
+  cover only some cases and are excluded.
+
+For each metric, evidence is the newest value from a run that measured it fully,
+used the approved model and prompt (when the policy requires it), and is not older
+than the policy's maximum evidence age.
 """
 
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+
+PARTIAL_COVERAGE = re.compile(r"stopped after \d+ of \d+")
+JUDGE_STOPPED = re.compile(r"judge stopped", re.IGNORECASE)
 
 
 @dataclass(frozen=True)
 class Run:
     run_at: datetime
-    generator_model: str
+    model: str
     prompt_version: str
     judge_model: str | None
     decision: str
@@ -31,14 +42,19 @@ class Run:
     source: str
 
     @property
+    def partial_coverage(self) -> bool:
+        return any(PARTIAL_COVERAGE.search(r) for r in self.reasons)
+
+    @property
+    def judge_incomplete(self) -> bool:
+        return any(JUDGE_STOPPED.search(r) for r in self.reasons)
+
+    @property
     def complete(self) -> bool:
-        return not any(r.startswith("evaluation incomplete") for r in self.reasons)
+        return not (self.partial_coverage or self.judge_incomplete)
 
     def matches(self, config: dict) -> bool:
-        return (
-            self.generator_model == config.get("generator_model")
-            and self.prompt_version == config.get("prompt_version")
-        )
+        return self.model == config.get("model") and self.prompt_version == config.get("prompt_version")
 
 
 @dataclass(frozen=True)
@@ -57,38 +73,48 @@ class EvidenceSet:
     as_of: datetime
     max_age: timedelta
     require_match: bool
+    judge_metrics: frozenset[str] = frozenset()
     _cache: dict[str, MetricEvidence] = field(default_factory=dict)
 
     @property
     def eligible_runs(self) -> list[Run]:
-        if not self.require_match:
-            return list(self.runs)
-        return [r for r in self.runs if r.matches(self.approved)]
+        """Runs that ran the full test set on the approved configuration."""
+        runs = [r for r in self.runs if not r.partial_coverage]
+        if self.require_match:
+            runs = [r for r in runs if r.matches(self.approved)]
+        return runs
+
+    @property
+    def excluded_runs(self) -> list[Run]:
+        eligible = set(id(r) for r in self.eligible_runs)
+        return [r for r in self.runs if id(r) not in eligible]
 
     @property
     def latest_run(self) -> Run | None:
         return self.runs[-1] if self.runs else None
 
+    def _usable(self, run: Run, name: str) -> bool:
+        if run.summary.get(name) is None:
+            return False
+        return not (name in self.judge_metrics and run.judge_incomplete)
+
     def metric(self, name: str) -> MetricEvidence:
         if name in self._cache:
             return self._cache[name]
-        found = None
-        for run in reversed(self.eligible_runs):
-            if run.summary.get(name) is not None:
-                found = run
-                break
+        found = next((r for r in reversed(self.eligible_runs) if self._usable(r, name)), None)
         if found is None:
-            ev = MetricEvidence(name, None, None, "missing", "not measured by any run of the approved configuration")
+            note = "no run of the approved configuration measured it on the full test set"
+            ev = MetricEvidence(name, None, None, "missing", note)
         elif self.as_of - found.run_at > self.max_age:
             age = (self.as_of - found.run_at).days
-            ev = MetricEvidence(name, found.summary[name], found, "stale", f"last measured {age} days ago")
+            ev = MetricEvidence(name, found.summary[name], found, "stale", f"last fully measured {age} days ago")
         else:
             ev = MetricEvidence(name, found.summary[name], found, "current")
         self._cache[name] = ev
         return ev
 
     def series(self, name: str) -> list[tuple[datetime, float]]:
-        return [(r.run_at, r.summary[name]) for r in self.eligible_runs if r.summary.get(name) is not None]
+        return [(r.run_at, r.summary[name]) for r in self.eligible_runs if self._usable(r, name)]
 
 
 def _parse_time(text: str) -> datetime:
@@ -105,13 +131,13 @@ def load_run(path: Path) -> Run:
     data = json.loads(path.read_text(encoding="utf-8"))
     return Run(
         run_at=_parse_time(data["run_at"]),
-        generator_model=data.get("generator_model", ""),
+        model=data.get("generator_model") or data.get("agent_model") or data.get("model") or "",
         prompt_version=data.get("prompt_version", ""),
         judge_model=data.get("judge_model"),
         decision=data.get("decision", ""),
         reasons=list(data.get("reasons", [])),
         summary=dict(data.get("summary", {})),
-        n_cases=int(data.get("n_cases", 0)),
+        n_cases=int(data.get("n_cases") or data.get("n_scenarios") or 0),
         source=path.name,
     )
 
@@ -135,4 +161,5 @@ def build_evidence(evidence_dir: Path, system: dict, policy: dict, as_of: dateti
         as_of=as_of or datetime.now(timezone.utc),
         max_age=timedelta(days=policy["evidence"]["max_age_days"]),
         require_match=policy["evidence"].get("require_matching_configuration", True),
+        judge_metrics=frozenset(system.get("judge_metrics", [])),
     )

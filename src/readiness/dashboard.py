@@ -123,8 +123,9 @@ def render(system: dict, register: dict, nist: dict, a: Assessment) -> str:
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>AI Release Readiness</title><style>{CSS}</style></head>
 <body><main>
+<div class="muted" style="margin-bottom:10px"><a href="index.html">← All AI systems</a></div>
 <h1>{escape(system['name'])}</h1>
-<div class="muted">AI release readiness · {escape(system['approved_configuration']['generator_model'])} · prompt {escape(system['approved_configuration']['prompt_version'])} · updated {ev.as_of:%Y-%m-%d %H:%M} UTC</div>
+<div class="muted">AI release readiness · {escape(system['approved_configuration']['model'])} · prompt {escape(system['approved_configuration']['prompt_version'])} · updated {ev.as_of:%Y-%m-%d %H:%M} UTC</div>
 
 <section class="card">
   <div class="banner"><span class="pill {DECISION_CLASS[a.decision]}">{a.decision}</span><span class="muted">{sign_txt}</span></div>
@@ -135,7 +136,7 @@ def render(system: dict, register: dict, nist: dict, a: Assessment) -> str:
     <div class="kpi"><b class="bad">{counts['Open']}</b><span class="muted">Open</span></div>
     <div class="kpi"><b class="warn">{counts['Evidence gap']}</b><span class="muted">Evidence gap</span></div>
     <div class="kpi"><b class="info">{counts['Accepted']}</b><span class="muted">Accepted</span></div>
-    <div class="kpi"><b>{len(ev.eligible_runs)}</b><span class="muted">Eval runs (approved config)</span></div>
+    <div class="kpi"><b>{len(ev.eligible_runs)}</b><span class="muted">Full eval runs counted</span></div>
   </div>
 </section>
 
@@ -156,7 +157,41 @@ def render(system: dict, register: dict, nist: dict, a: Assessment) -> str:
 
 <section class="card"><h2>NIST AI RMF coverage</h2><div class="table"><table>
   <thead><tr><th>Function</th><th>Subcategories</th><th>Covered</th></tr></thead><tbody>{nist_rows}</tbody></table></div>
-  <div class="muted" style="margin-top:8px">Full mapping in reports/NIST_AI_RMF.md</div>
+  <div class="muted" style="margin-top:8px">Full mapping in reports/{escape(system['id'])}/NIST_AI_RMF.md</div>
 </section>
+</main></body></html>
+"""
+
+
+def render_overview(entries) -> str:
+    cards = []
+    for system, a in entries:
+        counts = {st: sum(1 for r in a.risks if r.status == st) for st in STATUS_CLASS}
+        latest = a.evidence.latest_run
+        reasons = "".join(f"<li>{escape(x)}</li>" for x in a.reasons[:4])
+        more = f"<li>…and {len(a.reasons) - 4} more</li>" if len(a.reasons) > 4 else ""
+        cards.append(f"""<section class="card">
+  <div class="banner"><h2 style="margin:0"><a href="{escape(system['id'])}.html">{escape(system['name'])}</a></h2>
+  <span class="pill {DECISION_CLASS[a.decision]}">{a.decision}</span></div>
+  <div class="muted" style="margin-top:4px">{escape(system['approved_configuration']['model'])} · prompt {escape(str(system['approved_configuration']['prompt_version']))} · latest run {f"{latest.run_at:%Y-%m-%d %H:%M} UTC" if latest else "none"}</div>
+  <ul class="reasons">{reasons}{more}</ul>
+  <div class="kpis">
+    <div class="kpi"><b>{len(a.risks)}</b><span class="muted">Risks</span></div>
+    <div class="kpi"><b class="ok">{counts['Mitigated']}</b><span class="muted">Mitigated</span></div>
+    <div class="kpi"><b class="bad">{counts['Open']}</b><span class="muted">Open</span></div>
+    <div class="kpi"><b class="warn">{counts['Evidence gap']}</b><span class="muted">Evidence gap</span></div>
+    <div class="kpi"><b class="info">{counts['Accepted']}</b><span class="muted">Accepted</span></div>
+  </div>
+  <div style="margin-top:12px"><a href="{escape(system['id'])}.html">Open full dashboard →</a></div>
+</section>""")
+    as_of = entries[0][1].evidence.as_of
+    return f"""<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Release Readiness</title><style>{CSS}</style></head>
+<body><main>
+<h1>AI Release Readiness</h1>
+<div class="muted">{len(entries)} AI systems · evidence-based release recommendations · updated {as_of:%Y-%m-%d %H:%M} UTC</div>
+{''.join(cards)}
+<p class="muted" style="margin-top:20px">Recommendations only — each release needs a named approver's sign-off in its system card.</p>
 </main></body></html>
 """

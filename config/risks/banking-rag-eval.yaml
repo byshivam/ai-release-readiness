@@ -1,4 +1,4 @@
-# Risk register for the Arya Bank Policy Assistant.
+# Risk register for the Arya Bank Policy Assistant (system: banking-rag-eval).
 #
 # likelihood / impact: 1 (rare / minor) … 5 (almost certain / severe), before controls.
 # evidence: conditions on evaluation metrics. `required: false` marks supporting evidence

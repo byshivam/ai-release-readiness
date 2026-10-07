@@ -98,13 +98,13 @@ def _check_config(evidence: EvidenceSet) -> CheckResult:
     if run is None:
         return CheckResult(label, "missing", True, "no evaluation runs found")
     if run.matches(approved):
-        return CheckResult(label, "pass", True, f"{run.generator_model} · prompt {run.prompt_version}")
+        return CheckResult(label, "pass", True, f"{run.model} · prompt {run.prompt_version}")
     return CheckResult(
         label,
         "fail",
         True,
-        f"latest run used {run.generator_model} · prompt {run.prompt_version}; approved is "
-        f"{approved.get('generator_model')} · prompt {approved.get('prompt_version')}",
+        f"latest run used {run.model} · prompt {run.prompt_version}; approved is "
+        f"{approved.get('model')} · prompt {approved.get('prompt_version')}",
     )
 
 

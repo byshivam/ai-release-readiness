@@ -38,7 +38,7 @@ def model_card(system: dict, a: Assessment) -> str:
         f"| Version | {system.get('version', '—')} |",
         f"| Owner | {system['owner']} |",
         f"| Repository | {system['repository']} |",
-        f"| Approved model | `{system['approved_configuration']['generator_model']}` · prompt `{system['approved_configuration']['prompt_version']}` |",
+        f"| Approved model | `{system['approved_configuration']['model']}` · prompt `{system['approved_configuration']['prompt_version']}` |",
         f"| Latest evaluation | {latest.run_at:%Y-%m-%d %H:%M} UTC · {latest.n_cases} cases |" if latest else "| Latest evaluation | none |",
         "",
         "## What it does",
@@ -68,7 +68,7 @@ def model_card(system: dict, a: Assessment) -> str:
         f"- **Dataset:** {system['evaluation']['dataset']}",
         f"- **Method:** {system['evaluation']['method']}",
         f"- **Cadence:** {system['evaluation']['cadence']}",
-        f"- **Runs on record:** {len(ev.runs)} ({len(ev.eligible_runs)} on the approved configuration)",
+        f"- **Runs on record:** {len(ev.runs)} ({len(ev.eligible_runs)} full runs on the approved configuration count as evidence)",
         "",
         "## Key results",
         "",
@@ -197,7 +197,7 @@ def release_decision(system: dict, a: Assessment) -> str:
         "",
         f"## {ICON[a.decision]} Recommendation: {a.decision}",
         "",
-        f"As of {ev.as_of:%Y-%m-%d %H:%M} UTC, for `{system['approved_configuration']['generator_model']}` · prompt `{system['approved_configuration']['prompt_version']}`.",
+        f"As of {ev.as_of:%Y-%m-%d %H:%M} UTC, for `{system['approved_configuration']['model']}` · prompt `{system['approved_configuration']['prompt_version']}`.",
         "",
         "### Why",
         "",
@@ -205,14 +205,19 @@ def release_decision(system: dict, a: Assessment) -> str:
         "",
         "### Evidence base",
         "",
-        f"- {len(ev.runs)} evaluation runs on record, {len(ev.eligible_runs)} on the approved configuration",
+        f"- {len(ev.runs)} evaluation runs on record; {len(ev.eligible_runs)} ran the full test set on the approved configuration and count as evidence",
     ]
     if latest:
-        lines.append(f"- Latest run: {latest.run_at:%Y-%m-%d %H:%M} UTC · its own gate said **{latest.decision}**"
-                     + (" (run was incomplete)" if not latest.complete else ""))
+        state = ("stopped before every test case ran — excluded" if latest.partial_coverage
+                 else "LLM judge stopped part-way — judge metrics from it excluded" if latest.judge_incomplete
+                 else "complete")
+        lines.append(f"- Latest run: {latest.run_at:%Y-%m-%d %H:%M} UTC ({state}) · its own gate said **{latest.decision}**")
+    for run in ev.excluded_runs:
+        why = "partial test set" if run.partial_coverage else f"model/prompt {run.model} · {run.prompt_version} is not the approved one"
+        lines.append(f"- Excluded: {run.run_at:%Y-%m-%d %H:%M} UTC — {why}")
     lines += [
         f"- Evidence older than {ev.max_age.days} days is treated as stale",
-        "- Metrics from incomplete runs still count when that metric was fully measured; each metric uses its newest valid measurement",
+        "- Each metric uses its newest measurement that covered the full test set",
         "",
         "### Rules applied (config/policy.yaml)",
         "",
@@ -232,23 +237,25 @@ def release_decision(system: dict, a: Assessment) -> str:
 START, END = "<!-- READINESS:START -->", "<!-- READINESS:END -->"
 
 
-def readme_block(system: dict, a: Assessment) -> str:
-    counts = {s: sum(1 for r in a.risks if r.status == s) for s in STATUS_ICON}
+def readme_block(entries: list[tuple[dict, Assessment]]) -> str:
     lines = [
         START,
-        f"**{system['name']}** — {ICON[a.decision]} **{a.decision}** · updated {a.evidence.as_of:%Y-%m-%d %H:%M} UTC",
+        f"*Updated {entries[0][1].evidence.as_of:%Y-%m-%d %H:%M} UTC*",
         "",
-        "| Risks | 🟢 Mitigated | 🔴 Open | 🟠 Evidence gap | 🔵 Accepted |",
-        "|---|---|---|---|---|",
-        f"| {len(a.risks)} | {counts['Mitigated']} | {counts['Open']} | {counts['Evidence gap']} | {counts['Accepted']} |",
-        "",
-        "**Why:** " + "; ".join(a.reasons),
-        "",
-        "📄 [Model card](reports/MODEL_CARD.md) · [Risk register](reports/RISK_REGISTER.md) · "
-        "[NIST AI RMF mapping](reports/NIST_AI_RMF.md) · [Release decision](reports/RELEASE_DECISION.md) · "
-        "[Dashboard](docs/index.html)",
-        END,
+        "| AI system | Recommendation | 🟢 Mitigated | 🔴 Open | 🟠 Evidence gap | 🔵 Accepted | Governance pack |",
+        "|---|---|---|---|---|---|---|",
     ]
+    for system, a in entries:
+        c = {s: sum(1 for r in a.risks if r.status == s) for s in STATUS_ICON}
+        sid = system["id"]
+        pack = (f"[Model card](reports/{sid}/MODEL_CARD.md) · [Risks](reports/{sid}/RISK_REGISTER.md) · "
+                f"[NIST](reports/{sid}/NIST_AI_RMF.md) · [Decision](reports/{sid}/RELEASE_DECISION.md)")
+        lines.append(f"| **{system['name']}** | {ICON[a.decision]} **{a.decision}** | {c['Mitigated']} | {c['Open']} | "
+                     f"{c['Evidence gap']} | {c['Accepted']} | {pack} |")
+    lines.append("")
+    for system, a in entries:
+        lines.append(f"- **{system['name']}:** " + "; ".join(a.reasons))
+    lines += ["", "📊 Dashboard: [docs/index.html](docs/index.html)", END]
     return "\n".join(lines)
 
 

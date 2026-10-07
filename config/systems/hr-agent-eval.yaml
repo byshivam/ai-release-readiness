@@ -1,0 +1,64 @@
+# System card inputs for the Tayal Capital HR assistant agent.
+
+id: hr-agent-eval
+name: Tayal Capital HR Assistant Agent
+version: "prompt v3"
+owner: Shivam Tayal (AI Quality Engineering)
+repository: https://github.com/byshivam/hr-agent-eval
+evidence_source: eval-reports branch of the repository above (one JSON report per evaluation run)
+
+description: >
+  A tool-using AI agent that helps employees of Tayal Capital (a fictional finance company)
+  with HR tasks: checking leave balances, applying for and cancelling leave, looking up
+  holidays and HR policy, and raising HR tickets. It acts through 10 tools against an HR
+  system on the employee's behalf, so its actions — not only its words — carry risk.
+
+intended_use:
+  - Answer an employee's questions about their own leave balance, requests, payslip dates and HR policy
+  - Apply for or cancel leave for the logged-in employee when they clearly ask for it
+  - Raise HR tickets and say honestly when a tool fails or a request is not possible
+
+out_of_scope:
+  - Reading or changing any other employee's data, including a manager's team
+  - Approving leave, overriding policy limits, or acting on claims like "my manager said it's fine"
+  - Payroll changes, performance or disciplinary matters, legal or medical advice
+  - Acting on ambiguous requests without first asking the employee to clarify
+
+users: Tayal Capital employees, through an internal chat assistant
+human_oversight: >
+  Leave requests the agent submits still go to the manager for approval. Policy exceptions,
+  payroll and sensitive cases are routed to HR staff through a ticket.
+
+approved_configuration:
+  model: openai/gpt-oss-20b
+  prompt_version: v3
+
+# Scored by the LLM judge (G-Eval). If the judge stopped part-way, these are excluded from that run.
+judge_metrics: [response_quality]
+
+components:
+  - name: Agent LLM
+    detail: openai/gpt-oss-20b served by Groq (third-party API), tool calling
+  - name: Judge LLM (evaluation only)
+    detail: openai/gpt-oss-120b served by Groq
+  - name: Tools
+    detail: 10 HR tools (leave balance, apply/cancel leave, holidays, policy lookup, tickets and more)
+  - name: HR backend
+    detail: Deterministic simulated HR system with a frozen date and fault injection for testing
+
+evaluation:
+  dataset: 25 scenarios — routine tasks, date reasoning, privacy, unsafe actions, ambiguity, tool failures and policy bypass attempts
+  method: Trace-level scoring of tool calls, arguments and end state of the HR system, plus DeepEval ToolCorrectness and a G-Eval judge for reply quality
+  cadence: Every push, every pull request and nightly
+
+known_limitations:
+  - 25 scenarios cannot cover every way employees phrase requests; results describe this set only
+  - The HR backend is simulated with a frozen date; real calendars, time zones and integrations are untested
+  - With prompt v3 the agent answers some holiday questions from the calendar in its prompt instead of calling the holiday tool (scenario TS-04), a documented trade-off
+  - The LLM judge is itself a model and can be wrong; its scores are supporting evidence only
+  - Free-tier API limits can stop a run part-way; metrics that only cover part of the test set are not used as evidence
+
+sign_off:
+  approver: ""
+  date: ""
+  decision: ""

@@ -30,8 +30,12 @@ human_oversight: >
   human agents through existing channels named in the policies.
 
 approved_configuration:
-  generator_model: openai/gpt-oss-20b
+  model: openai/gpt-oss-20b
   prompt_version: v2
+
+# Metrics scored by the LLM judge. If the judge stopped part-way through a run,
+# these metrics from that run cover only some cases and are not used as evidence.
+judge_metrics: [faithfulness, answer_relevancy, contextual_precision, contextual_recall]
 
 components:
   - name: Generator LLM
@@ -53,7 +57,7 @@ evaluation:
 known_limitations:
   - The golden set is small (24 cases) and hand-written; it does not cover every phrasing customers use
   - The LLM judge is itself a model and can be wrong; its scores are supporting evidence, not ground truth
-  - Free-tier API limits can stop a run part-way; incomplete runs are treated as missing evidence
+  - Free-tier API limits can stop a run part-way; metrics that only cover part of the test set are not used as evidence
   - English only; Hindi and Hinglish questions are untested
 
 sign_off:
