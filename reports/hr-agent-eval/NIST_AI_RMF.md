@@ -33,11 +33,11 @@ How this project produces evidence for the NIST AI Risk Management Framework (AI
 | **MEASURE 2.3** | Performance is measured in conditions similar to deployment | linked risks | 🟢 H01, 🟢 H03 |
 | **MEASURE 2.5** | System is shown to be valid and reliable, with documented limits | linked risks | 🟢 H01, 🟢 H02 |
 | **MEASURE 2.6** | System is evaluated regularly for safety risks within tolerance | linked risks | 🟢 H05 |
-| **MEASURE 2.7** | Security and resilience are evaluated and documented | linked risks | 🟢 H06 |
-| **MEASURE 2.8** | Transparency and accountability risks are examined and documented | linked risks | 🟢 H06 |
+| **MEASURE 2.7** | Security and resilience are evaluated and documented | linked risks | 🔴 H06 |
+| **MEASURE 2.8** | Transparency and accountability risks are examined and documented | linked risks | 🔴 H06 |
 | **MEASURE 2.9** | Model output is explained and interpreted within context | linked risks | — |
 | **MEASURE 2.10** | Privacy risk is examined and documented | linked risks | 🟢 H04 |
-| **MEASURE 3.1** | Existing and emergent risks are tracked over time in deployment | linked risks; metric trends on the dashboard | 🟠 H09 |
+| **MEASURE 3.1** | Existing and emergent risks are tracked over time in deployment | linked risks; metric trends on the dashboard | 🔴 H09 |
 
 ## MANAGE
 
@@ -48,4 +48,4 @@ How this project produces evidence for the NIST AI Risk Management Framework (AI
 | **MANAGE 1.4** | Residual risks to downstream users are documented | residual risk column; risk acceptances | — |
 | **MANAGE 2.4** | Mechanisms exist to disengage systems with inconsistent performance | NO-GO gate blocks release | 🟢 H05 |
 | **MANAGE 3.2** | Pre-trained models are monitored as part of maintenance | linked risks | 🟢 H10 |
-| **MANAGE 4.1** | Post-deployment monitoring plans are implemented | nightly evaluation; linked risks | 🟠 H09 |
+| **MANAGE 4.1** | Post-deployment monitoring plans are implemented | nightly evaluation; linked risks | 🔴 H09 |

@@ -37,30 +37,30 @@ a{color:var(--info)}
 </style></head>
 <body><main>
 <h1>AI Release Readiness</h1>
-<div class="muted">2 AI systems · evidence-based release recommendations · updated 2026-10-07 08:23 UTC</div>
+<div class="muted">2 AI systems · evidence-based release recommendations · updated 2026-10-07 11:15 UTC</div>
 <section class="card">
   <div class="banner"><h2 style="margin:0"><a href="banking-rag-eval.html">Arya Bank Policy Assistant</a></h2>
-  <span class="pill nogo">NO-GO</span></div>
-  <div class="muted" style="margin-top:4px">openai/gpt-oss-20b · prompt v2 · latest run 2026-10-06 13:14 UTC</div>
-  <ul class="reasons"><li>R01 is rated critical and has no current evidence: Answers contain claims not supported by the policy documents (hallucination)</li></ul>
+  <span class="pill cond">CONDITIONAL GO</span></div>
+  <div class="muted" style="margin-top:4px">openai/gpt-oss-20b · prompt v2 · latest run 2026-10-07 09:03 UTC</div>
+  <ul class="reasons"><li>R10 — accepted: Personal or confidential customer data is exposed in answers</li></ul>
   <div class="kpis">
     <div class="kpi"><b>10</b><span class="muted">Risks</span></div>
-    <div class="kpi"><b class="ok">8</b><span class="muted">Mitigated</span></div>
+    <div class="kpi"><b class="ok">9</b><span class="muted">Mitigated</span></div>
     <div class="kpi"><b class="bad">0</b><span class="muted">Open</span></div>
-    <div class="kpi"><b class="warn">1</b><span class="muted">Evidence gap</span></div>
+    <div class="kpi"><b class="warn">0</b><span class="muted">Evidence gap</span></div>
     <div class="kpi"><b class="info">1</b><span class="muted">Accepted</span></div>
   </div>
   <div style="margin-top:12px"><a href="banking-rag-eval.html">Open full dashboard →</a></div>
 </section><section class="card">
   <div class="banner"><h2 style="margin:0"><a href="hr-agent-eval.html">Tayal Capital HR Assistant Agent</a></h2>
-  <span class="pill cond">CONDITIONAL GO</span></div>
-  <div class="muted" style="margin-top:4px">openai/gpt-oss-20b · prompt v3 · latest run 2026-10-06 13:18 UTC</div>
-  <ul class="reasons"><li>H09 — evidence gap: Quality silently degrades after a prompt, model or tool change</li></ul>
+  <span class="pill nogo">NO-GO</span></div>
+  <div class="muted" style="margin-top:4px">openai/gpt-oss-20b · prompt v3 · latest run 2026-10-07 09:19 UTC</div>
+  <ul class="reasons"><li>H06 is open and rated high: Agent hides tool errors, invents data, or reports &quot;submitted&quot; as &quot;approved&quot;</li><li>H09 is open and rated high: Quality silently degrades after a prompt, model or tool change</li></ul>
   <div class="kpis">
     <div class="kpi"><b>10</b><span class="muted">Risks</span></div>
-    <div class="kpi"><b class="ok">9</b><span class="muted">Mitigated</span></div>
-    <div class="kpi"><b class="bad">0</b><span class="muted">Open</span></div>
-    <div class="kpi"><b class="warn">1</b><span class="muted">Evidence gap</span></div>
+    <div class="kpi"><b class="ok">8</b><span class="muted">Mitigated</span></div>
+    <div class="kpi"><b class="bad">2</b><span class="muted">Open</span></div>
+    <div class="kpi"><b class="warn">0</b><span class="muted">Evidence gap</span></div>
     <div class="kpi"><b class="info">0</b><span class="muted">Accepted</span></div>
   </div>
   <div style="margin-top:12px"><a href="hr-agent-eval.html">Open full dashboard →</a></div>
