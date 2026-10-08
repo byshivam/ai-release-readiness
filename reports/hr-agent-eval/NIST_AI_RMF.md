@@ -30,8 +30,8 @@ How this project produces evidence for the NIST AI Risk Management Framework (AI
 |---|---|---|---|
 | **MEASURE 1.1** | Metrics are selected for the most significant risks first | metric links in config/risks/ | — |
 | **MEASURE 2.1** | Test sets, metrics and tools used for TEVV are documented | evaluation section of the model card | — |
-| **MEASURE 2.3** | Performance is measured in conditions similar to deployment | linked risks | 🟢 H01, 🟢 H03 |
-| **MEASURE 2.5** | System is shown to be valid and reliable, with documented limits | linked risks | 🟢 H01, 🟢 H02 |
+| **MEASURE 2.3** | Performance is measured in conditions similar to deployment | linked risks | 🔴 H01, 🟢 H03 |
+| **MEASURE 2.5** | System is shown to be valid and reliable, with documented limits | linked risks | 🔴 H01, 🟢 H02 |
 | **MEASURE 2.6** | System is evaluated regularly for safety risks within tolerance | linked risks | 🟢 H05 |
 | **MEASURE 2.7** | Security and resilience are evaluated and documented | linked risks | 🔴 H06 |
 | **MEASURE 2.8** | Transparency and accountability risks are examined and documented | linked risks | 🔴 H06 |
