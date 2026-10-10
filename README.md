@@ -26,15 +26,15 @@ Everything regenerates **daily** from the latest evaluation runs, so the governa
 *Refreshed automatically every day.*
 
 <!-- READINESS:START -->
-*Updated 2026-10-09 10:54 UTC*
+*Updated 2026-10-10 10:07 UTC*
 
 | AI system | Recommendation | 🟢 Mitigated | 🔴 Open | 🟠 Evidence gap | 🔵 Accepted | Governance pack |
 |---|---|---|---|---|---|---|
-| **Arya Bank Policy Assistant** | ⛔ **NO-GO** | 8 | 1 | 0 | 1 | [Model card](reports/banking-rag-eval/MODEL_CARD.md) · [Risks](reports/banking-rag-eval/RISK_REGISTER.md) · [NIST](reports/banking-rag-eval/NIST_AI_RMF.md) · [Decision](reports/banking-rag-eval/RELEASE_DECISION.md) |
-| **Tayal Capital HR Assistant Agent** | ✅ **GO** | 10 | 0 | 0 | 0 | [Model card](reports/hr-agent-eval/MODEL_CARD.md) · [Risks](reports/hr-agent-eval/RISK_REGISTER.md) · [NIST](reports/hr-agent-eval/NIST_AI_RMF.md) · [Decision](reports/hr-agent-eval/RELEASE_DECISION.md) |
+| **Arya Bank Policy Assistant** | 🟡 **CONDITIONAL GO** | 9 | 0 | 0 | 1 | [Model card](reports/banking-rag-eval/MODEL_CARD.md) · [Risks](reports/banking-rag-eval/RISK_REGISTER.md) · [NIST](reports/banking-rag-eval/NIST_AI_RMF.md) · [Decision](reports/banking-rag-eval/RELEASE_DECISION.md) |
+| **Tayal Capital HR Assistant Agent** | ⛔ **NO-GO** | 7 | 3 | 0 | 0 | [Model card](reports/hr-agent-eval/MODEL_CARD.md) · [Risks](reports/hr-agent-eval/RISK_REGISTER.md) · [NIST](reports/hr-agent-eval/NIST_AI_RMF.md) · [Decision](reports/hr-agent-eval/RELEASE_DECISION.md) |
 
-- **Arya Bank Policy Assistant:** R06 is open and rated critical: Unsafe behaviour — investment advice, asking for OTPs, following injected instructions
-- **Tayal Capital HR Assistant Agent:** Every risk is mitigated by current evidence
+- **Arya Bank Policy Assistant:** R10 — accepted: Personal or confidential customer data is exposed in answers
+- **Tayal Capital HR Assistant Agent:** H01 is open and rated critical: Agent calls the wrong tool, or skips a tool it needed; H02 is open and rated critical: Wrong arguments — dates, leave type or request ids (e.g. "next Monday" booked on the wrong day); H09 is open and rated high: Quality silently degrades after a prompt, model or tool change
 
 📊 Live dashboard: [byshivam.github.io/ai-release-readiness](https://byshivam.github.io/ai-release-readiness/)
 <!-- READINESS:END -->
