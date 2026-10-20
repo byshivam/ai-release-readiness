@@ -37,7 +37,7 @@ How this project produces evidence for the NIST AI Risk Management Framework (AI
 | **MEASURE 2.8** | Transparency and accountability risks are examined and documented | linked risks | 🟢 R05 |
 | **MEASURE 2.9** | Model output is explained and interpreted within context | linked risks | 🟢 R05 |
 | **MEASURE 2.10** | Privacy risk is examined and documented | linked risks | 🔵 R10 |
-| **MEASURE 3.1** | Existing and emergent risks are tracked over time in deployment | linked risks; metric trends on the dashboard | 🔴 R08 |
+| **MEASURE 3.1** | Existing and emergent risks are tracked over time in deployment | linked risks; metric trends on the dashboard | 🟢 R08 |
 
 ## MANAGE
 
@@ -48,4 +48,4 @@ How this project produces evidence for the NIST AI Risk Management Framework (AI
 | **MANAGE 1.4** | Residual risks to downstream users are documented | residual risk column; risk acceptances | — |
 | **MANAGE 2.4** | Mechanisms exist to disengage systems with inconsistent performance | NO-GO gate blocks release | — |
 | **MANAGE 3.2** | Pre-trained models are monitored as part of maintenance | linked risks | 🟢 R09 |
-| **MANAGE 4.1** | Post-deployment monitoring plans are implemented | nightly evaluation; linked risks | 🔴 R08 |
+| **MANAGE 4.1** | Post-deployment monitoring plans are implemented | nightly evaluation; linked risks | 🟢 R08 |
