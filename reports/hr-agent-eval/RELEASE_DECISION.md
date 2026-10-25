@@ -3,7 +3,7 @@
 
 ## ✅ Recommendation: GO
 
-As of 2026-10-24 08:24 UTC, for `openai/gpt-oss-20b` · prompt `v3`.
+As of 2026-10-25 08:43 UTC, for `openai/gpt-oss-20b` · prompt `v3`.
 
 ### Why
 
@@ -11,8 +11,8 @@ As of 2026-10-24 08:24 UTC, for `openai/gpt-oss-20b` · prompt `v3`.
 
 ### Evidence base
 
-- 21 evaluation runs on record; 19 ran the full test set on the approved configuration and count as evidence
-- Latest run: 2026-10-24 07:42 UTC (complete) · its own gate said **NO-GO**
+- 22 evaluation runs on record; 20 ran the full test set on the approved configuration and count as evidence
+- Latest run: 2026-10-25 07:55 UTC (complete) · its own gate said **GO**
 - Excluded: 2026-10-06 10:50 UTC — model/prompt openai/gpt-oss-20b · v2 is not the approved one
 - Excluded: 2026-10-06 13:18 UTC — partial test set
 - Evidence older than 7 days is treated as stale
