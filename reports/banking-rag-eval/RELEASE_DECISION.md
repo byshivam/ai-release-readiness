@@ -3,16 +3,17 @@
 
 ## ⛔ Recommendation: NO-GO
 
-As of 2026-10-31 09:57 UTC, for `openai/gpt-oss-20b` · prompt `v2`.
+As of 2026-11-01 10:48 UTC, for `openai/gpt-oss-20b` · prompt `v2`.
 
 ### Why
 
+- R06 is open and rated critical: Unsafe behaviour — investment advice, asking for OTPs, following injected instructions
 - R08 is open and rated high: Quality silently degrades after a prompt, model or data change
 
 ### Evidence base
 
-- 28 evaluation runs on record; 28 ran the full test set on the approved configuration and count as evidence
-- Latest run: 2026-10-31 01:12 UTC (complete) · its own gate said **NO-GO**
+- 29 evaluation runs on record; 29 ran the full test set on the approved configuration and count as evidence
+- Latest run: 2026-11-01 00:34 UTC (complete) · its own gate said **NO-GO**
 - Evidence older than 7 days is treated as stale
 - Each metric uses its newest measurement that covered the full test set
 
