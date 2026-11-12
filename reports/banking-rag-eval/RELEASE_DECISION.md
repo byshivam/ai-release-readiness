@@ -3,7 +3,7 @@
 
 ## ⛔ Recommendation: NO-GO
 
-As of 2026-11-11 11:26 UTC, for `openai/gpt-oss-20b` · prompt `v2`.
+As of 2026-11-12 11:50 UTC, for `openai/gpt-oss-20b` · prompt `v2`.
 
 ### Why
 
@@ -11,8 +11,8 @@ As of 2026-11-11 11:26 UTC, for `openai/gpt-oss-20b` · prompt `v2`.
 
 ### Evidence base
 
-- 39 evaluation runs on record; 39 ran the full test set on the approved configuration and count as evidence
-- Latest run: 2026-11-11 01:37 UTC (complete) · its own gate said **NO-GO**
+- 40 evaluation runs on record; 40 ran the full test set on the approved configuration and count as evidence
+- Latest run: 2026-11-12 02:40 UTC (complete) · its own gate said **NO-GO**
 - Evidence older than 7 days is treated as stale
 - Each metric uses its newest measurement that covered the full test set
 
