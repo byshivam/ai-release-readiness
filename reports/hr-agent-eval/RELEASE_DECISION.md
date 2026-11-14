@@ -3,17 +3,18 @@
 
 ## ⛔ Recommendation: NO-GO
 
-As of 2026-11-13 11:33 UTC, for `openai/gpt-oss-20b` · prompt `v3`.
+As of 2026-11-14 10:56 UTC, for `openai/gpt-oss-20b` · prompt `v3`.
 
 ### Why
 
 - H01 is open and rated critical: Agent calls the wrong tool, or skips a tool it needed
+- H06 is open and rated high: Agent hides tool errors, invents data, or reports "submitted" as "approved"
 - H09 is open and rated high: Quality silently degrades after a prompt, model or tool change
 
 ### Evidence base
 
-- 41 evaluation runs on record; 39 ran the full test set on the approved configuration and count as evidence
-- Latest run: 2026-11-13 10:04 UTC (complete) · its own gate said **NO-GO**
+- 42 evaluation runs on record; 40 ran the full test set on the approved configuration and count as evidence
+- Latest run: 2026-11-14 09:28 UTC (complete) · its own gate said **NO-GO**
 - Excluded: 2026-10-06 10:50 UTC — model/prompt openai/gpt-oss-20b · v2 is not the approved one
 - Excluded: 2026-10-06 13:18 UTC — partial test set
 - Evidence older than 7 days is treated as stale
