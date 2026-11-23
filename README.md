@@ -26,7 +26,7 @@ Everything regenerates **daily** from the latest evaluation runs, so the governa
 *Refreshed automatically every day.*
 
 <!-- READINESS:START -->
-*Updated 2026-11-22 11:58 UTC*
+*Updated 2026-11-23 13:40 UTC*
 
 | AI system | Recommendation | 🟢 Mitigated | 🔴 Open | 🟠 Evidence gap | 🔵 Accepted | Governance pack |
 |---|---|---|---|---|---|---|
@@ -34,7 +34,7 @@ Everything regenerates **daily** from the latest evaluation runs, so the governa
 | **Tayal Capital HR Assistant Agent** | ⛔ **NO-GO** | 8 | 2 | 0 | 0 | [Model card](reports/hr-agent-eval/MODEL_CARD.md) · [Risks](reports/hr-agent-eval/RISK_REGISTER.md) · [NIST](reports/hr-agent-eval/NIST_AI_RMF.md) · [Decision](reports/hr-agent-eval/RELEASE_DECISION.md) |
 
 - **Arya Bank Policy Assistant:** R08 is open and rated high: Quality silently degrades after a prompt, model or data change
-- **Tayal Capital HR Assistant Agent:** H01 is open and rated critical: Agent calls the wrong tool, or skips a tool it needed; H06 is open and rated high: Agent hides tool errors, invents data, or reports "submitted" as "approved"
+- **Tayal Capital HR Assistant Agent:** H01 is open and rated critical: Agent calls the wrong tool, or skips a tool it needed; H09 is open and rated high: Quality silently degrades after a prompt, model or tool change
 
 📊 Live dashboard: [byshivam.github.io/ai-release-readiness](https://byshivam.github.io/ai-release-readiness/)
 <!-- READINESS:END -->
