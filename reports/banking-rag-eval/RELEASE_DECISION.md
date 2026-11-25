@@ -3,17 +3,16 @@
 
 ## 🟡 Recommendation: CONDITIONAL GO
 
-As of 2026-11-24 14:16 UTC, for `openai/gpt-oss-20b` · prompt `v2`.
+As of 2026-11-25 13:29 UTC, for `openai/gpt-oss-20b` · prompt `v2`.
 
 ### Why
 
-- R05 — open: Missing or fabricated source citations
 - R10 — accepted: Personal or confidential customer data is exposed in answers
 
 ### Evidence base
 
-- 52 evaluation runs on record; 52 ran the full test set on the approved configuration and count as evidence
-- Latest run: 2026-11-24 05:40 UTC (complete) · its own gate said **NO-GO**
+- 53 evaluation runs on record; 53 ran the full test set on the approved configuration and count as evidence
+- Latest run: 2026-11-25 04:44 UTC (complete) · its own gate said **GO**
 - Evidence older than 7 days is treated as stale
 - Each metric uses its newest measurement that covered the full test set
 
